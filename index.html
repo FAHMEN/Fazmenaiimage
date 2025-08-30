@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fazmen AI - Image Generator</title>
+    <title>Fazmen AI - Advanced Image Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary-color: #10B981;
@@ -15,6 +16,7 @@
             --light-text: #F3F4F6;
             --card-bg: #FFFFFF;
             --error-color: #EF4444;
+            --warning-color: #F59E0B;
         }
 
         * {
@@ -28,6 +30,7 @@
             background-color: var(--background-color);
             color: var(--text-color);
             line-height: 1.6;
+            background: linear-gradient(135deg, #f0fdf4 0%, #f0fdf4 50%, #ecfdf5 50%, #ecfdf5 100%);
         }
 
         header {
@@ -35,6 +38,8 @@
             color: white;
             padding: 1.5rem 2rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
         }
 
         .header-content {
@@ -43,6 +48,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            position: relative;
+            z-index: 2;
         }
 
         .logo {
@@ -60,6 +67,16 @@
             font-size: 2rem;
         }
 
+        .header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%2300592e' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+
         main {
             max-width: 1200px;
             margin: 2rem auto;
@@ -69,9 +86,10 @@
         .generator-container {
             background-color: var(--card-bg);
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             margin-bottom: 2rem;
+            border: 1px solid #E5E7EB;
         }
 
         .input-section {
@@ -83,12 +101,16 @@
             margin-bottom: 1.2rem;
             color: var(--secondary-color);
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .prompt-input {
             display: flex;
             gap: 1rem;
             margin-bottom: 1.5rem;
+            flex-direction: column;
         }
 
         textarea {
@@ -97,7 +119,7 @@
             border: 1px solid #D1D5DB;
             border-radius: 8px;
             resize: vertical;
-            min-height: 100px;
+            min-height: 120px;
             font-size: 1rem;
             transition: border-color 0.2s;
         }
@@ -108,6 +130,14 @@
             box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
         }
 
+        .input-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
         button {
             background-color: var(--primary-color);
             color: white;
@@ -116,23 +146,29 @@
             padding: 0.8rem 1.5rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
-            align-self: flex-start;
-            margin-top: 0.5rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         button:hover {
             background-color: var(--primary-dark);
+            transform: translateY(-2px);
         }
 
         button:active {
-            transform: scale(0.98);
+            transform: translateY(0);
         }
 
         button:disabled {
             background-color: #9CA3AF;
             cursor: not-allowed;
             transform: none;
+        }
+
+        .retry-btn {
+            background-color: var(--warning-color);
         }
 
         .examples {
@@ -145,16 +181,24 @@
         .example-chip {
             background-color: var(--primary-light);
             color: var(--secondary-color);
-            padding: 0.6rem 1rem;
-            border-radius: 20px;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: all 0.2s;
             font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .example-chip:hover {
             background-color: var(--primary-color);
             color: white;
+            transform: translateY(-2px);
+        }
+
+        .example-chip i {
+            font-size: 0.8rem;
         }
 
         .output-section {
@@ -162,6 +206,20 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 400px;
+            justify-content: center;
+        }
+
+        .placeholder {
+            text-align: center;
+            color: #9CA3AF;
+            padding: 3rem;
+        }
+
+        .placeholder i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--primary-light);
         }
 
         .loading {
@@ -169,6 +227,7 @@
             flex-direction: column;
             align-items: center;
             margin: 2rem 0;
+            text-align: center;
         }
 
         .spinner {
@@ -181,6 +240,23 @@
             margin-bottom: 1rem;
         }
 
+        .progress-bar {
+            width: 300px;
+            height: 8px;
+            background-color: #E5E7EB;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s;
+            border-radius: 4px;
+        }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -191,30 +267,59 @@
             width: 100%;
             margin-top: 2rem;
             text-align: center;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .result img {
             max-width: 100%;
             max-height: 500px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
             margin-bottom: 1.5rem;
+            border: 1px solid #E5E7EB;
         }
 
         .result-actions {
             display: flex;
             gap: 1rem;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .error {
             display: none;
             color: var(--error-color);
             background-color: #FEE2E2;
-            padding: 1rem;
+            padding: 1.2rem;
             border-radius: 8px;
-            margin: 1rem 0;
+            margin: 1.5rem 0;
             width: 100%;
+            text-align: center;
+            border-left: 4px solid var(--error-color);
+        }
+
+        .error-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .info-box {
+            background-color: #EFF6FF;
+            color: #1E40AF;
+            padding: 1.2rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            width: 100%;
+            text-align: center;
+            border-left: 4px solid #3B82F6;
+            display: none;
         }
 
         footer {
@@ -225,27 +330,44 @@
             margin-top: 3rem;
         }
 
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            color: #D1D5DB;
+            font-size: 0.9rem;
+        }
+
         @media (max-width: 768px) {
-            .prompt-input {
+            .input-actions {
                 flex-direction: column;
-            }
-            
-            button {
-                align-self: stretch;
+                align-items: stretch;
             }
             
             .examples {
                 grid-template-columns: 1fr;
+            }
+            
+            .result-actions, .error-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            button {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
 </head>
 <body>
     <header>
+        <div class="header-bg"></div>
         <div class="header-content">
             <div class="logo">
-                <span class="logo-icon">✨</span>
-                <h1>Fazmen AI</h1>
+                <span class="logo-icon"><i class="fas fa-robot"></i></span>
+                <h1>Fazmen AI Image Generator</h1>
             </div>
         </div>
     </header>
@@ -253,35 +375,82 @@
     <main>
         <div class="generator-container">
             <div class="input-section">
-                <h2>Describe Your Imagination</h2>
+                <h2><i class="fas fa-magic"></i> Describe Your Imagination</h2>
                 <div class="prompt-input">
-                    <textarea id="prompt-input" placeholder="Enter a detailed description of the image you want to generate..."></textarea>
+                    <textarea id="prompt-input" placeholder="Enter a detailed description of the image you want to generate (e.g., a man who works harder to build a big empire that gonna be successful in the future, the name of the company is Fazmen)"></textarea>
                 </div>
-                <button id="generate-btn">Generate Image</button>
+                
+                <div class="input-actions">
+                    <button id="generate-btn">
+                        <i class="fas fa-wand-magic-sparkles"></i> Generate Image
+                    </button>
+                    
+                    <div class="attempt-counter">
+                        Attempts: <span id="attempt-count">0</span> | Success: <span id="success-count">0</span>
+                    </div>
+                </div>
+                
+                <div class="info-box" id="info-box">
+                    <p><i class="fas fa-info-circle"></i> The API might occasionally fail due to high demand. Please try again if you encounter errors.</p>
+                </div>
                 
                 <div class="examples">
-                    <div class="example-chip">a man who work harder to build a big empire</div>
-                    <div class="example-chip">futuristic city with flying cars</div>
-                    <div class="example-chip">serene landscape with mountains and lake</div>
-                    <div class="example-chip">cyberpunk street market at night</div>
+                    <div class="example-chip" data-prompt="a man who work harder to build a big empire that gonna be successful in the future the name of the company is fazmen">
+                        <i class="fas fa-lightbulb"></i> Fazmen Empire
+                    </div>
+                    <div class="example-chip" data-prompt="futuristic city with flying cars and neon lights">
+                        <i class="fas fa-lightbulb"></i> Futuristic City
+                    </div>
+                    <div class="example-chip" data-prompt="serene landscape with mountains and a clear lake">
+                        <i class="fas fa-lightbulb"></i> Mountain Landscape
+                    </div>
+                    <div class="example-chip" data-prompt="cyberpunk street market at night with holograms">
+                        <i class="fas fa-lightbulb"></i> Cyberpunk Market
+                    </div>
                 </div>
             </div>
             
             <div class="output-section">
-                <div class="loading" id="loading">
-                    <div class="spinner"></div>
-                    <p>Generating your image... This may take a moment.</p>
+                <div class="placeholder" id="placeholder">
+                    <i class="fas fa-image"></i>
+                    <h3>Your Generated Image Will Appear Here</h3>
+                    <p>Enter a prompt and click "Generate Image" to create amazing AI art</p>
                 </div>
                 
-                <div class="error" id="error"></div>
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Generating your image... This may take 15-30 seconds.</p>
+                    <div class="progress-bar">
+                        <div class="progress" id="progress-bar"></div>
+                    </div>
+                    <p id="status-text">Initializing API connection...</p>
+                </div>
+                
+                <div class="error" id="error">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Error Generating Image</h3>
+                    <p id="error-message"></p>
+                    <div class="error-actions">
+                        <button class="retry-btn" id="retry-btn">
+                            <i class="fas fa-redo"></i> Try Again
+                        </button>
+                        <button id="different-prompt-btn">
+                            <i class="fas fa-edit"></i> Use Different Prompt
+                        </button>
+                    </div>
+                </div>
                 
                 <div class="result" id="result">
                     <img id="generated-image" src="" alt="Generated image">
                     <div class="result-actions">
                         <a id="download-btn" download="fazmen-ai-image.jpg">
-                            <button>Download Image</button>
+                            <button><i class="fas fa-download"></i> Download Image</button>
                         </a>
-                        <button id="regenerate-btn">Generate Again</button>
+                        <button id="regenerate-btn">
+                            <i class="fas fa-sync"></i> Generate Again
+                        </button>
+                        <button id="new-prompt-btn">
+                            <i class="fas fa-plus"></i> New Prompt
+                        </button>
                     </div>
                 </div>
             </div>
@@ -290,63 +459,217 @@
 
     <footer>
         <p>Powered by Fazmen AI • Creating the future, one image at a time</p>
+        <div class="stats">
+            <span>API: OverChat Imagen</span>
+            <span>Model: Google Imagen 4</span>
+        </div>
     </footer>
 
     <script type="module">
-        // Copy of the provided code with minimal modifications for browser compatibility
-        function _getUUIDFallback() {
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-                const r = Math.random() * 16 | 0;
-                const v = c === 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
+        // Stats counters
+        let attemptCount = 0;
+        let successCount = 0;
+        
+        // Elements
+        const promptInput = document.getElementById('prompt-input');
+        const generateBtn = document.getElementById('generate-btn');
+        const loadingEl = document.getElementById('loading');
+        const resultEl = document.getElementById('result');
+        const errorEl = document.getElementById('error');
+        const placeholderEl = document.getElementById('placeholder');
+        const generatedImage = document.getElementById('generated-image');
+        const downloadBtn = document.getElementById('download-btn');
+        const regenerateBtn = document.getElementById('regenerate-btn');
+        const newPromptBtn = document.getElementById('new-prompt-btn');
+        const retryBtn = document.getElementById('retry-btn');
+        const differentPromptBtn = document.getElementById('different-prompt-btn');
+        const errorMessage = document.getElementById('error-message');
+        const attemptCountEl = document.getElementById('attempt-count');
+        const successCountEl = document.getElementById('success-count');
+        const progressBar = document.getElementById('progress-bar');
+        const statusText = document.getElementById('status-text');
+        const infoBox = document.getElementById('info-box');
+        const exampleChips = document.querySelectorAll('.example-chip');
+        
+        // Show info box on page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                infoBox.style.display = 'block';
+            }, 2000);
+        });
+        
+        // Update stats
+        function updateStats() {
+            attemptCountEl.textContent = attemptCount;
+            successCountEl.textContent = successCount;
+        }
+        
+        // Example chip click handler
+        exampleChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                promptInput.value = chip.getAttribute('data-prompt');
+                promptInput.focus();
             });
-        }
-
-        function getUUID() {
-            try {
-                if (typeof globalThis !== 'undefined' && globalThis.crypto && typeof globalThis.crypto.randomUUID === 'function') {
-                    return globalThis.crypto.randomUUID();
+        });
+        
+        // Simulate progress bar
+        function simulateProgress() {
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    return;
                 }
-            } catch (e) {
-                // ignore
+                width += 2;
+                progressBar.style.width = width + '%';
+                
+                // Update status text based on progress
+                if (width < 30) {
+                    statusText.textContent = "Connecting to API...";
+                } else if (width < 60) {
+                    statusText.textContent = "Processing your request...";
+                } else if (width < 90) {
+                    statusText.textText = "Generating image...";
+                } else {
+                    statusText.textContent = "Finalizing...";
+                }
+            }, 300);
+            
+            return interval;
+        }
+        
+        // Generate button click handler
+        generateBtn.addEventListener('click', generateImageFromPrompt);
+        
+        // Regenerate button click handler
+        regenerateBtn.addEventListener('click', () => {
+            generateImageFromPrompt(promptInput.value);
+        });
+        
+        // New prompt button click handler
+        newPromptBtn.addEventListener('click', () => {
+            resultEl.style.display = 'none';
+            placeholderEl.style.display = 'block';
+            promptInput.value = '';
+            promptInput.focus();
+        });
+        
+        // Retry button click handler
+        retryBtn.addEventListener('click', () => {
+            generateImageFromPrompt(promptInput.value);
+        });
+        
+        // Different prompt button click handler
+        differentPromptBtn.addEventListener('click', () => {
+            errorEl.style.display = 'none';
+            placeholderEl.style.display = 'block';
+            promptInput.focus();
+        });
+        
+        // Main function to generate image
+        async function generateImageFromPrompt() {
+            const prompt = promptInput.value.trim();
+            
+            if (!prompt) {
+                showError('Please enter a description for the image');
+                return;
             }
-            return _getUUIDFallback();
+            
+            // Update stats
+            attemptCount++;
+            updateStats();
+            
+            // UI state updates
+            generateBtn.disabled = true;
+            loadingEl.style.display = 'flex';
+            resultEl.style.display = 'none';
+            errorEl.style.display = 'none';
+            placeholderEl.style.display = 'none';
+            
+            // Start progress bar simulation
+            const progressInterval = simulateProgress();
+            
+            try {
+                // Modified version of the original code with better error handling
+                const imageUrl = await generateImageWithRetry(prompt);
+                
+                // Set the image source
+                generatedImage.src = imageUrl;
+                
+                // Set download link
+                downloadBtn.href = imageUrl;
+                
+                // Show result
+                loadingEl.style.display = 'none';
+                resultEl.style.display = 'block';
+                
+                // Update success count
+                successCount++;
+                updateStats();
+                
+            } catch (error) {
+                console.error('Error generating image:', error);
+                showError(error.message || 'Failed to generate image. The API might be busy. Please try again in a moment.');
+                loadingEl.style.display = 'none';
+                placeholderEl.style.display = 'none';
+                errorEl.style.display = 'block';
+            } finally {
+                generateBtn.disabled = false;
+                clearInterval(progressInterval);
+            }
         }
-
-        async function _tryDecompress(buf, contentEncoding) {
-            // In browser environment, we'll rely on native decompression
-            // Most browsers handle gzip/deflate automatically
-            return null;
+        
+        // Enhanced image generation with retry logic
+        async function generateImageWithRetry(prompt, retries = 3) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const imageUrl = await generateImage(prompt);
+                    return imageUrl;
+                } catch (error) {
+                    console.warn(`Attempt ${i+1} failed:`, error);
+                    
+                    if (i === retries - 1) {
+                        throw error; // If all retries failed
+                    }
+                    
+                    // Wait before retrying (exponential backoff)
+                    await new Promise(resolve => setTimeout(resolve, 2000 * (i + 1)));
+                }
+            }
         }
-
+        
+        // Show error message
+        function showError(message) {
+            errorMessage.textContent = message;
+        }
+        
+        // Modified version of the original generateImage function
         async function generateImage(prompt) {
             if (!prompt || typeof prompt !== 'string') {
-                throw new Error('prompt parameter is required and must be a string');
+                throw new Error('Prompt parameter is required and must be a string');
             }
 
             const endpoint = 'https://widget-api.overchat.ai/v1/images/generations';
+            
+            // Generate UUID (simplified for browser)
+            function getUUID() {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+                    const r = Math.random() * 16 | 0;
+                    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            }
+            
             const uuid = getUUID();
 
             const headers = {
-                'User-Agent': 'Mozilla/5.0 (Linux; Android 11; vivo 1901 Build/RP1A.200720.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.7258.143 Mobile Safari/537.36',
                 'Accept': 'application/json, text/plain, */*',
-                'Accept-Encoding': 'identity',
                 'Content-Type': 'application/json',
-                'sec-ch-ua-platform': '"Android"',
                 'x-device-uuid': uuid,
-                'authorization': 'Bearer',
-                'sec-ch-ua': '"Not;A=Brand";v="99", "Android WebView";v="139", "Chromium";v="139"',
-                'sec-ch-ua-mobile': '?1',
                 'x-device-language': 'en',
                 'x-device-platform': 'web',
                 'x-device-version': '1.0.44',
                 'origin': 'https://widget.overchat.ai',
-                'x-requested-with': 'mark.via.gp',
-                'sec-fetch-site': 'same-site',
-                'sec-fetch-mode': 'cors',
-                'sec-fetch-dest': 'empty',
-                'referer': 'https://widget.overchat.ai/',
-                'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
                 'priority': 'u=1, i'
             };
 
@@ -365,128 +688,33 @@
                 });
             } catch (err) {
                 console.error('[generateImage] fetch error:', err);
-                throw err;
+                throw new Error('Network error. Please check your connection and try again.');
             }
 
-            const contentEncoding = resp.headers && typeof resp.headers.get === 'function' ? resp.headers.get('content-encoding') : null;
-
-            // Always read raw bytes first, then decode / attempt decompression if needed
-            let arr;
-            try {
-                arr = await resp.arrayBuffer();
-            } catch (err) {
-                console.error('[generateImage] failed to read response as arrayBuffer:', err);
-                throw err;
+            // Check for HTTP errors
+            if (!resp.ok) {
+                throw new Error(`Server returned ${resp.status} error. Please try again later.`);
             }
 
-            const buf = new Uint8Array(arr);
-            let text = new TextDecoder().decode(buf);
-
-            // quick sanity check: try parse as JSON
-            let json = null;
+            let json;
             try {
-                json = JSON.parse(text);
+                json = await resp.json();
             } catch (err) {
-                // try decompress if content-encoding present or text is binary-like
-                console.warn('[generateImage] initial JSON.parse failed, trying decompression fallback');
-                const decompressed = await _tryDecompress(buf, contentEncoding);
-                if (decompressed) {
-                    text = decompressed;
-                    try {
-                        json = JSON.parse(text);
-                    } catch (e2) {
-                        console.error('[generateImage] JSON.parse failed after decompression:', e2);
-                        throw new Error('Response is not valid JSON after decompression');
-                    }
-                } else {
-                    // If server used zstd or something else we can't handle, be explicit
-                    if (contentEncoding && contentEncoding.toLowerCase().includes('zstd')) {
-                        throw new Error('Server returned zstd-compressed response which is not handled here. I requested identity but server still returned zstd.');
-                    }
-                    // else we couldn't decompress
-                    console.error('[generateImage] Could not decompress response and initial parse failed. Raw buffer length:', buf.length);
-                    throw new Error('Response is not valid JSON and could not be decompressed');
-                }
+                console.error('[generateImage] JSON parse error:', err);
+                throw new Error('Invalid response from server. Please try again.');
             }
 
             if (!json || !Array.isArray(json.data) || json.data.length === 0) {
-                throw new Error('No data or url in response');
+                throw new Error('No data or url in response. The API might be busy. Please try again.');
             }
 
             const first = json.data[0];
             if (!first.url) {
-                throw new Error('No url found in first data element');
+                throw new Error('No url found in response. The API might be busy. Please try again.');
             }
 
             return first.url;
         }
-
-        // UI Interaction Code
-        document.addEventListener('DOMContentLoaded', function() {
-            const promptInput = document.getElementById('prompt-input');
-            const generateBtn = document.getElementById('generate-btn');
-            const loadingEl = document.getElementById('loading');
-            const resultEl = document.getElementById('result');
-            const errorEl = document.getElementById('error');
-            const generatedImage = document.getElementById('generated-image');
-            const downloadBtn = document.getElementById('download-btn');
-            const regenerateBtn = document.getElementById('regenerate-btn');
-            const exampleChips = document.querySelectorAll('.example-chip');
-            
-            // Example chip click handler
-            exampleChips.forEach(chip => {
-                chip.addEventListener('click', () => {
-                    promptInput.value = chip.textContent;
-                });
-            });
-            
-            // Generate button click handler
-            generateBtn.addEventListener('click', async () => {
-                const prompt = promptInput.value.trim();
-                
-                if (!prompt) {
-                    showError('Please enter a description for the image');
-                    return;
-                }
-                
-                // UI state updates
-                generateBtn.disabled = true;
-                loadingEl.style.display = 'flex';
-                resultEl.style.display = 'none';
-                errorEl.style.display = 'none';
-                
-                try {
-                    const imageUrl = await generateImage(prompt);
-                    
-                    // Set the image source
-                    generatedImage.src = imageUrl;
-                    
-                    // Set download link
-                    downloadBtn.href = imageUrl;
-                    
-                    // Show result
-                    loadingEl.style.display = 'none';
-                    resultEl.style.display = 'block';
-                } catch (error) {
-                    console.error('Error generating image:', error);
-                    showError(error.message || 'Failed to generate image. Please try again.');
-                    loadingEl.style.display = 'none';
-                } finally {
-                    generateBtn.disabled = false;
-                }
-            });
-            
-            // Regenerate button click handler
-            regenerateBtn.addEventListener('click', () => {
-                resultEl.style.display = 'none';
-                promptInput.focus();
-            });
-            
-            function showError(message) {
-                errorEl.textContent = message;
-                errorEl.style.display = 'block';
-            }
-        });
     </script>
 </body>
 </html>
