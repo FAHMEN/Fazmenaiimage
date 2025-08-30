@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fazmen AI - Image Generator</title>
+    <style>
+        :root {
+            --primary-color: #10B981;
+            --primary-dark: #059669;
+            --primary-light: #A7F3D0;
+            --secondary-color: #1F2937;
+            --background-color: #F9FAFB;
+            --text-color: #111827;
+            --light-text: #F3F4F6;
+            --card-bg: #FFFFFF;
+            --error-color: #EF4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .generator-container {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .input-section {
+            padding: 2rem;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .input-section h2 {
+            margin-bottom: 1.2rem;
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        .prompt-input {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        textarea {
+            flex: 1;
+            padding: 1rem;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            resize: vertical;
+            min-height: 100px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.8rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            align-self: flex-start;
+            margin-top: 0.5rem;
+        }
+
+        button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            background-color: #9CA3AF;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .example-chip {
+            background-color: var(--primary-light);
+            color: var(--secondary-color);
+            padding: 0.6rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .example-chip:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .output-section {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .loading {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin: 2rem 0;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--primary-light);
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result {
+            display: none;
+            width: 100%;
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .result img {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .error {
+            display: none;
+            color: var(--error-color);
+            background-color: #FEE2E2;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            width: 100%;
+        }
+
+        footer {
+            background-color: var(--secondary-color);
+            color: var(--light-text);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        @media (max-width: 768px) {
+            .prompt-input {
+                flex-direction: column;
+            }
+            
+            button {
+                align-self: stretch;
+            }
+            
+            .examples {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon">✨</span>
+                <h1>Fazmen AI</h1>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="generator-container">
+            <div class="input-section">
+                <h2>Describe Your Imagination</h2>
+                <div class="prompt-input">
+                    <textarea id="prompt-input" placeholder="Enter a detailed description of the image you want to generate..."></textarea>
+                </div>
+                <button id="generate-btn">Generate Image</button>
+                
+                <div class="examples">
+                    <div class="example-chip">a man who work harder to build a big empire</div>
+                    <div class="example-chip">futuristic city with flying cars</div>
+                    <div class="example-chip">serene landscape with mountains and lake</div>
+                    <div class="example-chip">cyberpunk street market at night</div>
+                </div>
+            </div>
+            
+            <div class="output-section">
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Generating your image... This may take a moment.</p>
+                </div>
+                
+                <div class="error" id="error"></div>
+                
+                <div class="result" id="result">
+                    <img id="generated-image" src="" alt="Generated image">
+                    <div class="result-actions">
+                        <a id="download-btn" download="fazmen-ai-image.jpg">
+                            <button>Download Image</button>
+                        </a>
+                        <button id="regenerate-btn">Generate Again</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Powered by Fazmen AI • Creating the future, one image at a time</p>
+    </footer>
+
+    <script type="module">
+        // Copy of the provided code with minimal modifications for browser compatibility
+        function _getUUIDFallback() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        function getUUID() {
+            try {
+                if (typeof globalThis !== 'undefined' && globalThis.crypto && typeof globalThis.crypto.randomUUID === 'function') {
+                    return globalThis.crypto.randomUUID();
+                }
+            } catch (e) {
+                // ignore
+            }
+            return _getUUIDFallback();
+        }
+
+        async function _tryDecompress(buf, contentEncoding) {
+            // In browser environment, we'll rely on native decompression
+            // Most browsers handle gzip/deflate automatically
+            return null;
+        }
+
+        async function generateImage(prompt) {
+            if (!prompt || typeof prompt !== 'string') {
+                throw new Error('prompt parameter is required and must be a string');
+            }
+
+            const endpoint = 'https://widget-api.overchat.ai/v1/images/generations';
+            const uuid = getUUID();
+
+            const headers = {
+                'User-Agent': 'Mozilla/5.0 (Linux; Android 11; vivo 1901 Build/RP1A.200720.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.7258.143 Mobile Safari/537.36',
+                'Accept': 'application/json, text/plain, */*',
+                'Accept-Encoding': 'identity',
+                'Content-Type': 'application/json',
+                'sec-ch-ua-platform': '"Android"',
+                'x-device-uuid': uuid,
+                'authorization': 'Bearer',
+                'sec-ch-ua': '"Not;A=Brand";v="99", "Android WebView";v="139", "Chromium";v="139"',
+                'sec-ch-ua-mobile': '?1',
+                'x-device-language': 'en',
+                'x-device-platform': 'web',
+                'x-device-version': '1.0.44',
+                'origin': 'https://widget.overchat.ai',
+                'x-requested-with': 'mark.via.gp',
+                'sec-fetch-site': 'same-site',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-dest': 'empty',
+                'referer': 'https://widget.overchat.ai/',
+                'accept-language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
+                'priority': 'u=1, i'
+            };
+
+            const bodyObj = {
+                prompt: prompt,
+                model: 'google/imagen4/preview',
+                personaId: 'Imagen-4'
+            };
+
+            let resp;
+            try {
+                resp = await fetch(endpoint, {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify(bodyObj),
+                });
+            } catch (err) {
+                console.error('[generateImage] fetch error:', err);
+                throw err;
+            }
+
+            const contentEncoding = resp.headers && typeof resp.headers.get === 'function' ? resp.headers.get('content-encoding') : null;
+
+            // Always read raw bytes first, then decode / attempt decompression if needed
+            let arr;
+            try {
+                arr = await resp.arrayBuffer();
+            } catch (err) {
+                console.error('[generateImage] failed to read response as arrayBuffer:', err);
+                throw err;
+            }
+
+            const buf = new Uint8Array(arr);
+            let text = new TextDecoder().decode(buf);
+
+            // quick sanity check: try parse as JSON
+            let json = null;
+            try {
+                json = JSON.parse(text);
+            } catch (err) {
+                // try decompress if content-encoding present or text is binary-like
+                console.warn('[generateImage] initial JSON.parse failed, trying decompression fallback');
+                const decompressed = await _tryDecompress(buf, contentEncoding);
+                if (decompressed) {
+                    text = decompressed;
+                    try {
+                        json = JSON.parse(text);
+                    } catch (e2) {
+                        console.error('[generateImage] JSON.parse failed after decompression:', e2);
+                        throw new Error('Response is not valid JSON after decompression');
+                    }
+                } else {
+                    // If server used zstd or something else we can't handle, be explicit
+                    if (contentEncoding && contentEncoding.toLowerCase().includes('zstd')) {
+                        throw new Error('Server returned zstd-compressed response which is not handled here. I requested identity but server still returned zstd.');
+                    }
+                    // else we couldn't decompress
+                    console.error('[generateImage] Could not decompress response and initial parse failed. Raw buffer length:', buf.length);
+                    throw new Error('Response is not valid JSON and could not be decompressed');
+                }
+            }
+
+            if (!json || !Array.isArray(json.data) || json.data.length === 0) {
+                throw new Error('No data or url in response');
+            }
+
+            const first = json.data[0];
+            if (!first.url) {
+                throw new Error('No url found in first data element');
+            }
+
+            return first.url;
+        }
+
+        // UI Interaction Code
+        document.addEventListener('DOMContentLoaded', function() {
+            const promptInput = document.getElementById('prompt-input');
+            const generateBtn = document.getElementById('generate-btn');
+            const loadingEl = document.getElementById('loading');
+            const resultEl = document.getElementById('result');
+            const errorEl = document.getElementById('error');
+            const generatedImage = document.getElementById('generated-image');
+            const downloadBtn = document.getElementById('download-btn');
+            const regenerateBtn = document.getElementById('regenerate-btn');
+            const exampleChips = document.querySelectorAll('.example-chip');
+            
+            // Example chip click handler
+            exampleChips.forEach(chip => {
+                chip.addEventListener('click', () => {
+                    promptInput.value = chip.textContent;
+                });
+            });
+            
+            // Generate button click handler
+            generateBtn.addEventListener('click', async () => {
+                const prompt = promptInput.value.trim();
+                
+                if (!prompt) {
+                    showError('Please enter a description for the image');
+                    return;
+                }
+                
+                // UI state updates
+                generateBtn.disabled = true;
+                loadingEl.style.display = 'flex';
+                resultEl.style.display = 'none';
+                errorEl.style.display = 'none';
+                
+                try {
+                    const imageUrl = await generateImage(prompt);
+                    
+                    // Set the image source
+                    generatedImage.src = imageUrl;
+                    
+                    // Set download link
+                    downloadBtn.href = imageUrl;
+                    
+                    // Show result
+                    loadingEl.style.display = 'none';
+                    resultEl.style.display = 'block';
+                } catch (error) {
+                    console.error('Error generating image:', error);
+                    showError(error.message || 'Failed to generate image. Please try again.');
+                    loadingEl.style.display = 'none';
+                } finally {
+                    generateBtn.disabled = false;
+                }
+            });
+            
+            // Regenerate button click handler
+            regenerateBtn.addEventListener('click', () => {
+                resultEl.style.display = 'none';
+                promptInput.focus();
+            });
+            
+            function showError(message) {
+                errorEl.textContent = message;
+                errorEl.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
